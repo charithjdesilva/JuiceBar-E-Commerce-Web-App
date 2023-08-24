@@ -95,3 +95,17 @@ To inject the content to the 'content' defined as @yield('content')
 ```
 
 Change the route of '/' to view 'index' instead of view 'welcome'
+
+## Make references to the css and js files in the public
+
+Use {{ asset( ) }} and parse in the css/js file location in the public folder as parameter.
+
+example:
+```
+<img src="{{ asset('images/img.png') }}" />
+```
+
+## Connect to the Database
+
+Configurations are on the .env file. (host, database name, username, password)
+Create a new database and change the database name in the ``.env``

@@ -109,3 +109,66 @@ example:
 
 Configurations are on the .env file. (host, database name, username, password)
 Create a new database and change the database name in the ``.env``
+
+example: ``juicebar``
+
+### Use migation to create tables
+
+Run the command ``php artisan make:migration create_``*tableName*_``table``
+
+example:
+```
+php artisan make:migration create_products_table
+```
+
+After running the above command a new file will be created on the database/migartions folder.
+
+Now in the created CreateProductsTable file specify the columns of the database table.
+
+example:
+If we want to add a column named "name" we can add it as ```$table->String('name');```
+
+For a nullable column
+```$table->String('description')->nullable();```
+
+```$table->decimal('price', 8,2);``` // max price 999999.00
+
+```
+$table->decimal('salePrice', 8,2)->nullable();
+```
+```
+$table->int('quantity');
+```
+
+With this migation way we can create the tables we need.
+
+example: 
+```
+php artisan make:migration create_orders_table
+```
+
+These tables are in project. But not yet on the database. To migrate it to the database run the following command.
+
+```
+php artisan migrate
+```
+
+### Create a new Controller
+
+Make sure that the controller name's first letter is in uppercase.
+```
+php artisan make:controller JuicebarController
+```
+
+New controller will be created in the Http/Controllers folder.
+Controller should be imported to routes/web.php
+
+```
+use App\Http\Controllers\JuicebarController;
+```
+
+Then, add the following routes instead of the default route.
+
+```
+
+```

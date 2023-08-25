@@ -3,17 +3,17 @@
 @section('content')
 
 <div class="hero-wrap hero-bread" style="background-image: url('images/bg_6.jpg');">
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7);"></div>      
       <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
           <div class="col-md-9 ftco-animate text-center">
-          	<p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>About</span></p>
-            <h1 class="mb-0 bread">About Us</h1>
+            <h1 class="mb-0 bread text-white">About Us</h1>
           </div>
         </div>
       </div>
     </div>
 
-    <section class="ftco-section ftco-no-pb ftco-no-pt bg-light">
+    <section class="ftco-section ftco-no-pb ftco-no-pt bg-light my-5">
 			<div class="container">
 				<div class="row">
 					<div class="col-md-5 p-md-5 img img-2 d-flex justify-content-center align-items-center" style="background-image: url(images/about.jpg);">

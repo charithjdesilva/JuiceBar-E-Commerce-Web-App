@@ -161,6 +161,28 @@ php artisan make:controller JuicebarController
 ```
 
 New controller will be created in the Http/Controllers folder.
+Add functions to deal with the DB to the controller.
+
+Import the DB class.
+
+```
+use Illuminate\Support\Facades\DB;
+```
+
+example:
+```
+    function index(){
+        $products = DB::table('products')->get();
+        return view('index', ['products'=>$products]);
+    }
+
+    function product(){
+        $products = DB::table('products')->get();
+        return view('index', ['products'=>$products]);
+    }
+}
+```
+
 Controller should be imported to routes/web.php
 
 ```
@@ -170,5 +192,66 @@ use App\Http\Controllers\JuicebarController;
 Then, add the following routes instead of the default route.
 
 ```
+Route::get('/index', [JuicebarController::class, 'index'])->name('home');
+Route::get('/products', [JuicebarController::class, 'products'])->name('products');
 
+```
+
+## Displaying products
+
+### Adding a foreach loop to display products
+
+```
+@foreach($products as $product)
+		    			<div class="col-sm-6 col-md-6 col-lg-4 ftco-animate">
+		    				<div class="product">
+		    					<a href="#" class="img-prod"><img class="img-fluid" src="{{asset('images'.$product->image)}}" alt="Colorlib Template">
+		    						<span class="status">30%</span>
+		    						<div class="overlay"></div>
+		    					</a>
+		    					<div class="text py-3 px-3">
+		    						<h3><a href="#">{{$product->name}}</a></h3>
+		    						<div class="d-flex">
+		    							<div class="pricing">
+				    						<p class="price"><span class="mr-2 price-dc">{{$product->price}}</span><span class="price-sale">@if($product->salePrice){{$product->salePrice}}@else{{$product->price}}@endif</span></p>
+				    					</div>
+				    					<div class="rating">
+			    							<p class="text-right">
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
+			    							</p>
+			    						</div>
+			    					</div>
+			    					<p class="bottom-area d-flex px-3">
+		    							<a href="#" class="add-to-cart text-center py-2 mr-1"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
+		    							<a href="#" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
+		    						</p>
+		    					</div>
+		    				</div>
+		    			</div>
+						@endforeach
+```
+
+Linking product title to a single product.
+
+```
+<h3><a href="{{route('single_product', ['id'=>$product->id] )}}">{{$product->name}}</a></h3>
+```
+
+Create the single product route in the **web.php**
+
+Add single_product controller to web.php
+
+```Route::get('/single_product/{id}', [JuicebarController::class, 'single_product'])->name('single_product');```
+
+Create the function **single_product** in the **JuicebarController**.
+
+```
+public function single_product(Request $request, $id){
+        $product_array = DB::table('products')->where('id', $id)->get();
+        return view('single_product', ['product_array'=>product_array]);
+    }
 ```

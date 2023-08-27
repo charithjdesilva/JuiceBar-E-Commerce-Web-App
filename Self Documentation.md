@@ -255,3 +255,49 @@ public function single_product(Request $request, $id){
         return view('single_product', ['product_array'=>product_array]);
     }
 ```
+
+## Creating the Cart Page
+
+### Cart view
+
+First, create cart.blade.php in the views.
+
+Add, the layout.
+```
+@extends('layout.main')
+@section('content')
+	//HTML section for cart
+@endsection
+```
+
+Create the HTML section in between cart.
+
+### CartController
+
+Create using the following command.
+
+```
+php artisan make:controller CartController
+```
+
+Create the route for the Cart in the ```web.php```
+
+```
+use App\Http\Controllers\CartController;
+
+
+Route::get('/cart', [CartController::class, 'cart'])->name('cart');
+```
+
+Create the function in the ``CartController`` which returns the view ``cart``
+
+```
+  // returns the view cart
+    public function cart(){
+        return view('cart');
+    }
+```
+
+## Adding items to cart
+
+We need to 

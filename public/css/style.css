@@ -8084,7 +8084,7 @@ h1, h2, h3, h4, h5,
         padding-bottom: .9rem;
         color: rgba(255, 255, 255, 0.7); }
         .ftco-navbar-light .navbar-nav > .nav-item > .nav-link:hover {
-          color: #fff; } }
+          color: #fff !important; } }
   .ftco-navbar-light .navbar-nav > .nav-item .dropdown-menu {
     border: none;
     background: #fff;
@@ -8202,6 +8202,10 @@ h1, h2, h3, h4, h5,
     .ftco-navbar-light.scrolled .navbar-brand {
       color: #000000; }
 
+#ftco-nav a:hover{
+  color: #FFA45C;
+}
+
 .navbar-brand {
   font-weight: 800;
   font-size: 20px;
@@ -8209,8 +8213,13 @@ h1, h2, h3, h4, h5,
   letter-spacing: 2px; }
 
 .hero-wrap {
+  box-sizing: border-box;
   width: 100%;
-  position: relative; }
+  position: relative;
+  height: 10%;
+  padding: 40px !important;
+  margin-top: 20px;
+}
   .hero-wrap .overlay {
     position: absolute;
     top: 0;
@@ -8838,10 +8847,14 @@ h1, h2, h3, h4, h5,
 .product-details h3 {
   font-size: 30px;
   font-weight: 400; }
-
+  
 .product-details .price span {
-  font-size: 30px;
+  font-size: 22px;
   color: #000000; }
+
+  .product-details .price-dc {
+    color: #FF5C66 !important;
+  }
 
 .product-details button i {
   color: #000000; }
@@ -9272,6 +9285,14 @@ textarea.form-control {
 
 .ftco-bg-dark {
   background: #3c312e; }
+
+.ftco-footer li a:hover{
+  color: #FFA45C !important; 
+}
+
+.ftco-footer-social li a span:hover{
+  color: #FFA45C; 
+}
 
 .ftco-footer {
   font-size: 14px;

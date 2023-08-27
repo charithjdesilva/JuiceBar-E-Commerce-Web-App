@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\JuicebarController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,3 +30,5 @@ Route::get('/about', function(){
 })->name('about');
 
 Route::get('/single_product/{id}', [JuicebarController::class, 'single_product'])->name('single_product');
+
+Route::get('/cart', [CartController::class, 'cart'])->name('cart');

@@ -5,13 +5,13 @@
 <div class="hero-wrap hero-bread" style="background-image: url('images/bg_6.jpg');">
 	<div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7);"></div>      
 	<div class="container">
-        <div class="row no-gutters slider-text align-items-center justify-content-center">
-          <div class="col-md-9 ftco-animate text-center">
-            <h1 class="mb-0 bread text-white">Collection Products</h1>
-          </div>
-        </div>
-      </div>
-    </div>
+		<div class="row no-gutters slider-text align-items-center justify-content-center">
+			<div class="col-md-9 ftco-animate text-center">
+			<h1 class="mb-0 bread text-white">Collection Products</h1>
+			</div>
+		</div>
+	</div>
+</div>
 
     <section class="ftco-section bg-light">
     	<div class="container">
@@ -32,15 +32,6 @@
 		    							<div class="pricing">
 				    						<p class="price"><span class="mr-2 price-dc">Rs. {{$product->price}}</span><span class="price-sale">@if($product->salePrice){{$product->salePrice}}@else{{$product->price}}@endif</span></p>
 				    					</div>
-				    					<!-- <div class="rating">
-			    							<p class="text-right">
-			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
-			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
-			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
-			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
-			    								<a href="#"><span class="ion-ios-star-outline"></span></a>
-			    							</p>
-			    						</div> -->
 			    					</div>
 			    					<p class="bottom-area d-flex px-3">
 		    							<a href="#" class="add-to-cart text-center py-2 mr-1"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
@@ -53,19 +44,30 @@
 
 		    		</div>
 					
-		    		<div class="row mt-5">
+		    		<div class="row mt-5 justify-content-center  ftco-animate">
 						<div class="col text-center">
-							<div class="block-27">
-							<ul>
-								<li><a href="#">&lt;</a></li>
-								<li class="active"><span>1</span></li>
-								<li><a href="#">2</a></li>
-								<li><a href="#">3</a></li>
-								<li><a href="#">4</a></li>
-								<li><a href="#">5</a></li>
-								<li><a href="#">&gt;</a></li>
+							<ul class="pagination justify-content-center">
+								{{ $products->links('pagination::bootstrap-4') }}
 							</ul>
-							</div>
+							<style>
+								.pagination .page-item.active .page-link {
+									background-color: #343a40; /* Bootstrap's bg-dark color */
+									color: #ffffff; /* Bootstrap's text-white color */
+									border-color: #000000;
+								}
+								.pagination .page-item .page-link {
+									background-color: #000000; /* Bootstrap's bg-dark color */
+									color: #ffffff; /* Bootstrap's text-white color */
+								}
+								.pagination .page-item.active .page-link:hover {
+									background-color: #343a40; /* Bootstrap's bg-dark color */
+									color: #ffffff; /* Bootstrap's text-white color */
+								}
+								.pagination .page-item .page-link:hover {
+									background-color: #FFA45C; /* Bootstrap's bg-dark color */
+									color: #ffffff; /* Bootstrap's text-white color */
+								}
+							</style>
 						</div>
 		        	</div>
 		    	</div>

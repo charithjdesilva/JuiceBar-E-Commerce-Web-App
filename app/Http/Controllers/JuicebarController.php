@@ -14,7 +14,7 @@ class JuicebarController extends Controller
     }
 
     function product(){
-        $products = DB::table('products')->get();
+        $products = DB::table('products')->paginate(12);
         return view('products', ['products'=>$products]);
     }
 

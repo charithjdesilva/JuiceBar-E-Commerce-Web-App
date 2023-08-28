@@ -20,23 +20,31 @@
     				<div class="row">
 
 						@foreach($products as $product)
-		    			<div class="col-sm-6 col-md-6 col-lg-4 ftco-animate" onclick="window.location='{{ route('single_product', ['id' => $product->id]) }}'; return false;">
+		    			<div class="col-sm-6 col-md-6 col-lg-4 ftco-animate">
 		    				<div class="product">
 		    					<a href="#" class="img-prod"><img class="img-fluid" src="{{asset('images/'.$product->image)}}" alt="Colorlib Template">
 								<span class="status">{{round(($product->price - $product->salePrice)/$product->price*100, 2)}}% Off</span>
 		    						<div class="overlay"></div>
 		    					</a>
 		    					<div class="text py-3 px-3">
-		    						<h3><a href="{{ route('single_product', ['id' => $product->id]) }}">{{$product->name}}</a></h3>
+		    						<h3 onclick="window.location='{{ route('single_product', ['id' => $product->id]) }}'; return false;"><a href="{{ route('single_product', ['id' => $product->id]) }}">{{$product->name}}</a></h3>
 		    						<div class="d-flex">
 		    							<div class="pricing">
 				    						<p class="price"><span class="mr-2 price-dc">Rs. {{$product->price}}</span><span class="price-sale">@if($product->salePrice){{$product->salePrice}}@else{{$product->price}}@endif</span></p>
 				    					</div>
 			    					</div>
-			    					<p class="bottom-area d-flex px-3">
-		    							<a href="#" class="add-to-cart text-center py-2 mr-1"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
+			    					<form class="bottom-area d-flex px-3" id="form_Cart" method="POST" action="{{route('add_to_cart')}}">
+										@csrf
+										<a href="#" class="add-to-cart text-center py-2 mr-1 submit-form-cart"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
 		    							<a href="#" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
-		    						</p>
+
+										<input type="hidden" name="id" value="{{$product->id}}" />
+										<input type="hidden" name="name" value="{{$product->name}}" />
+										<input type="hidden" name="price" value="{{$product->price}}" />
+										<input type="hidden" name="salePrice" value="{{$product->salePrice}}" />
+										<input type="hidden" name="quantity" value="1" />
+										<input type="hidden" name="image" value="{{$product->image}}" />
+									</form>
 		    					</div>
 		    				</div>
 		    			</div>
@@ -74,5 +82,19 @@
     		</div>
     	</div>
     </section>
+
+	<script>
+		const submitButtons = document.querySelectorAll(".submit-form-cart");
+
+		submitButtons.forEach(button => {
+			button.addEventListener("click", function(event) {
+				event.preventDefault(); // Prevent the default anchor behavior
+				const form = this.closest("form"); // Find the parent form element
+				if (form) {
+					form.submit(); // Submit the form
+				}
+			});
+		});
+	</script>
 
 @endsection

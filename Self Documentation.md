@@ -300,4 +300,419 @@ Create the function in the ``CartController`` which returns the view ``cart``
 
 ## Adding items to cart
 
-We need to 
+We need to add items to the cart upon a click of "Add to cart" button. To do this we are implementing a form in the ``product.blade.php``.
+
+Here, we are adding a 1 as default quantity, they can later increase it from the cart.
+@csrf added to protect the form from hackers. (It is a security best practice.)
+
+```
+<form class="bottom-area d-flex px-3" id="form_Cart" method="POST" action="{{route('add_to_cart')}}">
+	@csrf
+	<a href="#" class="add-to-cart text-center py-2 mr-1" id="submit_Form_Cart"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
+	<a href="#" class="buy-now text-center py-2">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
+
+	<input type="hidden" name="id" value="{{$product->id}}" />
+	<input type="hidden" name="name" value="{{$product->name}}" />
+	<input type="hidden" name="price" value="{{$product->price}}" />
+	<input type="hidden" name="salePrice" value="{{$product->salePrice}}" />
+	<input type="hidden" name="quantity" value="1" />
+	<input type="hidden" name="image" value="{{$product->image}}" />
+</form>
+```
+
+### Create the add_to_cart route in the web.php
+
+Only allowing user to add to cart using POST method. Not allowing the GET method. In such case user will be redirected to the index page (home).
+
+```
+Route::post('/add_to_cart', [CartController::class, 'add_to_cart'])->name('add_to_cart');
+Route::get('/add_to_cart', function(){
+    return redirect('/');
+});
+```
+
+### Create the add_to_cart function in the CartController
+
+```
+// add item to cart
+public function add_to_cart(Request $request){
+	// if we have a cart in session
+	if($request->session()->has('cart')){
+
+		// check whether the product is already in the cart or not
+
+		// to do that first get the cart, this will have an associative_array, key will be the id, value will be the product
+		$cart = $request->session()->get('cart');   // ['6' => [6's information], '8' => [8's information]]
+
+		// get the product_id s to an array, which are already in the cart
+		// we are using the array_column(input, column_key) function to check whether the id exist in the cart or not
+		$product_array_ids = array_column($cart, 'id'); // [12, 5, 15]
+
+		// get the product id from the submited form in the front-end form_Cart in product.blade.php
+		$id = $request->input('id');    // get the id of the product from the front-end form_Cart in product.blade.php
+
+		// check if product not in the array, then add the product to cart
+		if(!in_array($id, $product_array_ids)){
+			// get details of the product from the form
+			$name = $request->input('name');
+			$image = $request->input('image');
+			$price = $request->input('price');
+			$quantity = $request->input('quantity');
+			$salePrice = $request->input('salePrice');
+
+			// we need to check whether there is a sale or not on this product, before adding the product to cart
+			if($salePrice != null){
+				$price_to_charge = $salePrice;
+			}
+			else{
+				$price_to_charge = $price;
+			}
+
+			// add the product to the card
+			$product_array = array(
+				'id' => $id,
+				'name' => $name,
+				'image' => $image,
+				'price' => $price_to_charge,
+				'quantity' => $quantity,
+			);
+
+			$cart[$id] = $product_array;
+			$request->session()->put('cart', $cart);  //put the cart in the session
+		}
+
+		// else tell the user the product is already in the cart
+		else{
+			echo "<script>alert('Product is already in the cart!');</script>";
+		}
+	}
+
+	// if we don't have a cart in session
+	else{
+		// create an array called cart
+		$cart = array();
+
+		// since this will be the first product to the cart, we don't need to check anything
+		// get details of the product from the form
+		$id = $request->input('id');
+		$name = $request->input('name');
+		$image = $request->input('image');
+		$price = $request->input('price');
+		$quantity = $request->input('quantity');
+		$salePrice = $request->input('salePrice');
+
+		// we need to check whether there is a sale or not on this product, before adding the product to cart
+		if($salePrice != null){
+			$price_to_charge = $salePrice;
+		}
+		else{
+			$price_to_charge = $price;
+		}
+
+		// add the product to the card
+		$product_array = array(
+			'id' => $id,
+			'name' => $name,
+			'image' => $image,
+			'price' => $price_to_charge,
+			'quantity' => $quantity,
+		);
+
+		$cart[$id] = $product_array;
+		$request->session()->put('cart', $cart);  //put the cart in the session
+	}
+
+	return view('cart');
+}
+```
+
+### Access the product from the cart view	(cart.blade.php)
+
+First we check if the session has a cart, and if it does then we loop over through each product in the cart.
+
+```
+@if(Session::has('cart'))
+    @foreach(Session::get('cart') as $product)
+
+	// statements
+
+	@endforeach
+@endif
+```
+
+### Calculate total for the cart
+
+```
+function calculateTotalCart(Request $request){
+	$cart = $request->session()->get('cart');
+	$total_price = 0;
+	$total_quantity = 0;
+
+	foreach($cart as $id => $product){
+		$product = cart['id'];
+
+		$price = $product['price'];
+		$quantity = $product['quantity'];
+
+		$total_price = $total_price + ($price * $quantity);
+		$total_quantity = $total_quantity + $quantity;
+
+	}
+
+	$request->session()->put('total', $total_price);
+	$request->session()->put('quantity', $total_quantity);
+}
+```
+
+Add the calculateTotalCart() to the add_to_cart() function. So, when an item added it will be calculated again.
+
+Next, display the total in the cart.blade.php
+
+- First check wheter there is a total or not.
+- If there is then, display it.
+
+
+### Create the remove button
+
+We are using a form to make the remove button work. 
+
+```
+<td class="product-remove">
+	<form method="POST" action="remove_from_cart">
+		@csrf
+		<input type="hidden" name="id" value="{{ $product['id'] }}"  />
+		<a href="#" class="submit-form"><span class="ion-ios-close"></span></a>
+	</form>
+</td>
+```
+
+Create the route in the web.php
+
+```
+Route::post('/remove_from_cart', [CartController::class, 'remove_from_cart'])->name('remove_from_cart');
+Route::get('/remove_from_cart', function(){
+    return redirect('/');
+});
+```
+
+Next create remove_from_cart function in the CartController
+
+```
+function remove_from_cart(Request $request){
+	
+	// get the cart
+	//before getting the cart we need to check if it exists or not
+	if($request->session()->has('cart')){
+		// in-order to remove a item we need to get the id
+		$id = $request->input('id');
+		
+		// get the cart
+		$cart = $request->session()->get('cart');
+
+		//remove the product from the cart
+		unset($cart[$id]);
+
+		// update the session cart
+		$request->session()->put('cart', $cart);
+
+		// Now products in the cart updated, we have to recalculate the total
+		$this->calculateTotalCart($request);
+	}
+	return view('cart');
+}
+```
+
+### Increment/decrement the quantity
+
+We are also using a form here. And two input buttons. We are getting the id of the product as well.
+
+```
+<td class="quantity">
+	<div class="input-group mb-3">
+		<form method="POST" action="{{ route('edit_product_quanity') }}">
+			@csrf
+			<div class="input-group-prepend">
+				<button class="quantity-minus input-group-text px-3" name="decrease_quantity_btn" type="button">-</button>
+			</div>
+			<input type="hidden" name="id" value="{{ $product['id'] }}" />
+			<input type="text" name="quantity" class="quantity form-control input-number" value="{{$product['quantity']}}" min="1" max="100" readonly />
+			<div class="input-group-append">
+				<button class="quantity-plus input-group-text px-3" name="increase_quantity_btn" type="button">+</button>
+			</div>
+		</form>
+	</div>
+</td>
+```
+
+Create the ``route('edit_product_quanity')`` in web.
+
+```
+Route::post('/edit_product_quanity', [CartController::class, 'edit_product_quanity'])->name('edit_product_quanity');
+Route::get('/edit_product_quanity', function(){
+    return redirect('/');
+});
+```
+
+## Create the Checkout
+
+### Create the checkout button
+
+Add the checkout route by creating a form for the checkout button in ``cart.blade.php``
+User should not be able to checkout unless there is total price in the cart.
+	- check whether there is a total
+	- check if it is not null
+
+```
+ @if(Session::has('total'))
+	@if(Session::get('total') != null)
+		<form method="GET" action="{{ route('checkout') }}">
+			<p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+		</form>
+	@endif
+@endif
+```
+
+### Create the route('checkout')
+
+```
+Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
+```
+
+### Create checkout function in the CartController
+
+```
+function checkout(){
+	return view('checkout');
+}
+```
+
+### Create the checkout view
+
+@extends('layouts.main')
+
+@section('content')
+
+	//checkout view section
+
+@endsection
+
+### Create the form to chcekout
+
+```
+<form method="POST" id="checkout-form" action="{{ route('order') }}" class="billing-form">
+```
+
+### Create the routte for 'place_order'
+
+```
+Route::post('/place_order', [CartController::class, 'place_order'])->name('place_order');
+```
+
+### Create the 'place_order' function in the CartController
+
+We want to know the posted form data.
+We want to know the cart of the user.
+
+
+```
+use Illuminate\Support\Facades\DB;   // import the DB
+
+
+function place_order(Request $request){
+	// we need to make sure that the cart is not empty
+	if($request->session()->has('cart')){
+		$name = $request->input('name');
+		$email = $request->input('email');
+		$phone = $request->input('phone');
+		$city = $request->input('city');
+		$address = $request->input('address');
+
+		// get the cost from the session
+		$cost = $request->session()->get('total');
+
+		// get status whether user paid or not
+		$status = "Not paid";
+
+		// we need to store the date, store the year, month, day
+		$date = date('Y-m-d');
+
+		// get products from the cart
+		$cart = $request->session()->get('cart');
+
+		// insert the order into the database, inorder to place a order, in this InsertGetId() return the orderId
+		$order_id =  DB::table('orders')->InsertGetId([
+						'name' => $name,
+						'email' => $email,
+						'phone' => $phone,
+						'city' => $city,
+						'address' => $address,
+						'cost' => $cost,
+						'status' => $status,
+						'date' => $date
+					], 'id');   // get the id assigned to this record in the database
+	}
+	// else we redirect
+	else{
+		return redirect('/');
+	}
+}
+```
+
+Also add this to the above function. To add the order item to the order_item table.
+
+```
+// get all the products from the cart, since it is an array we need to use a foreach loop
+foreach($cart as $id => $product){
+
+	$product = $cart[$id];
+	$product_id = $product['id'];
+	$product_name = $product['name'];
+	$product_price = $product['price'];
+	$product_quantity = $product['quantity'];
+	$product_image = $product['image'];
+
+	// insert the data to the database table order_items
+	DB::table('order_items')->insert([
+		'order_id' => $order_id,
+		'product_id' => $product_id,
+		'product_name' => $product_name,
+		'product_price' => $product_price,
+		'product_quanity' => $product_quanity,
+		'product_image' => $product_image,
+		'order_date' => $date
+	]);
+}
+```
+
+
+Add the order_id into the session, for the payment.
+```
+$request->session()->put('order_id', $order_id);
+
+return view('payment');
+```
+
+## Creating the Payament page
+
+Make PayamentController
+
+```
+php artisan make:controller PaymentController
+```
+
+It will create the PaymentController in the ``Http/Controllers``.
+
+Create the function for returning view ``payment``
+
+Create the route for the function in the ``web.php``
+
+Display the billing address if cart has a total and it is not null. Also Session should has a order_id and it should not be null.
+
+```
+@if(Session::has('total') && Session::get('total') != null)
+    @if(Session::has('order_id') && Session::get('order_id') != null)
+// Form
+
+	@endif
+@endif
+```
